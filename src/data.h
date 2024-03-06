@@ -25,6 +25,4 @@ ErrorCode delete_file(const char *file_path);
 
 ErrorCode encrypt_file(const char *file_path);
 
-int get_shift_from_key(const char *key);
-
 #endif

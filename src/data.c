@@ -54,33 +54,29 @@ ErrorCode delete_file(const char *file_path) {
 }
 
 ErrorCode encrypt_file(const char *file_path) {
-    int shift = get_shift_from_key(ENCODE_KEY);
     FILE *pfile = open_file(file_path, "r+");
 
     char c;
+    char *key = ENCODE_KEY;
+    char *key_current_position = key;
+    int shift = 0;
     while ((c = fgetc(pfile)) != EOF) {
-        if (isalpha(c)) {
+        if (isalpha(c) && c != ' ') {
+            printf("char %c key %c\n", c, *key_current_position);
+            if (islower(*key_current_position))
+                shift = *key_current_position - 'a' + 1;
+            else if (isupper(*key_current_position))
+                shift = *key_current_position - 'A' + 1;
+            if (*(++key_current_position) == '\0') key_current_position = key;
             if (isupper(c)) {
-                c = (c - 'A' + shift) % 26 + 'A';
+                c = (c - 'A' + shift - 1) % 26 + 'A';
             } else {
-                c = (c - 'a' + shift) % 26 + 'a';
+                c = (c - 'a' + shift - 1) % 26 + 'a';
             }
             fseek(pfile, -1, SEEK_CUR);
             fputc(c, pfile);
-            fseek(pfile, 1, SEEK_CUR);
         }
     }
     fclose(pfile);
     return OK;
-}
-
-int get_shift_from_key(const char *key) {
-    int shift = 0;
-    for (int i = 0; i < (int)strlen(key); i++) {
-        if ('a' <= key[i] && key[i] <= 'z')
-            shift += key[i] - 'a' + 1;
-        else if ('A' <= key[i] && key[i] <= 'Z')
-            shift += key[i] - 'A' + 1;
-    }
-    return shift;
 }
