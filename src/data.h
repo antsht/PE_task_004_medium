@@ -11,6 +11,7 @@
 
 #define MAX_NAME_LEN 256
 #define BUFFER 1024
+#define ENCODE_KEY "peeredu"
 
 ErrorCode get_file_path(char *file_path);
 
@@ -21,5 +22,9 @@ int compare_files(const char *file_path_1, const char *file_path_2);
 FILE *open_file(const char *db_path, const char *mode);
 
 ErrorCode delete_file(const char *file_path);
+
+ErrorCode encrypt_file(const char *file_path);
+
+int get_shift_from_key(const char *key);
 
 #endif

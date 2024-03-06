@@ -52,3 +52,35 @@ ErrorCode delete_file(const char *file_path) {
     }
     return OK;
 }
+
+ErrorCode encrypt_file(const char *file_path) {
+    int shift = get_shift_from_key(ENCODE_KEY);
+    FILE *pfile = open_file(file_path, "r+");
+
+    char c;
+    while ((c = fgetc(pfile)) != EOF) {
+        if (isalpha(c)) {
+            if (isupper(c)) {
+                c = (c - 'A' + shift) % 26 + 'A';
+            } else {
+                c = (c - 'a' + shift) % 26 + 'a';
+            }
+            fseek(pfile, -1, SEEK_CUR);
+            fputc(c, pfile);
+            fseek(pfile, 1, SEEK_CUR);
+        }
+    }
+    fclose(pfile);
+    return OK;
+}
+
+int get_shift_from_key(const char *key) {
+    int shift = 0;
+    for (int i = 0; i < (int)strlen(key); i++) {
+        if ('a' <= key[i] && key[i] <= 'z')
+            shift += key[i] - 'a' + 1;
+        else if ('A' <= key[i] && key[i] <= 'Z')
+            shift += key[i] - 'A' + 1;
+    }
+    return shift;
+}
