@@ -10,6 +10,59 @@ ErrorCode get_file_path(char *file_path) {
     return OK;
 }
 
+ErrorCode get_dir_path(char *dir_path) {
+    if (scanf("%256s", dir_path) != 1) {
+        return INVALID_INPUT;
+    }
+    DIR *pdir = opendir(dir_path);
+    if (pdir == NULL) {
+        return IO_ERROR;
+    }
+    closedir(pdir);
+    return OK;
+}
+
+ErrorCode read_files_in_dir(char *dir_path, Files *files) {
+    DIR *pdir = opendir(dir_path);
+    if (pdir == NULL) {
+        return IO_ERROR;
+    }
+    struct dirent *pdirent;
+    while ((pdirent = readdir(pdir)) != NULL) {
+        if (strcmp(pdirent->d_name, ".") == 0 || strcmp(pdirent->d_name, "..") == 0) {
+            continue;
+        }
+        strcpy(files->files[files->files_count].filename, pdirent->d_name);
+        calc_ascii_sum_for_file(dir_path, &(files->files[files->files_count]));
+        files->files_count++;
+        if (files->files_count == MAX_FILES) {
+            break;
+        }
+    }
+    closedir(pdir);
+    return OK;
+}
+
+ErrorCode ascii_sort_files(Files *files) {
+    qsort(files->files, files->files_count, sizeof(File_t), &compare_files_by_ascii_sum);
+    return OK;
+}
+
+int compare_files_by_ascii_sum(const void *a, const void *b) {
+    return ((File_t *)a)->ascii_sum - ((File_t *)b)->ascii_sum;
+}
+
+ErrorCode rename_files_in_dir(char *dir_path, Files *files) {
+    for (int i = 0; i < files->files_count; i++) {
+        char new_name[2 * MAX_NAME_LEN];
+        sprintf(new_name, "%s/%02d_%s", dir_path, i, files->files[i].filename);
+        char old_name[2 * MAX_NAME_LEN];
+        sprintf(old_name, "%s/%s", dir_path, files->files[i].filename);
+        rename(old_name, new_name);
+    }
+    return OK;
+}
+
 int get_file_size(const char *file_path) {
     FILE *pfile = open_file(file_path, "rb");
     fseek(pfile, 0, SEEK_END);
@@ -75,6 +128,19 @@ ErrorCode encrypt_file(const char *file_path) {
             fseek(pfile, -1, SEEK_CUR);
             fputc(c, pfile);
         }
+    }
+    fclose(pfile);
+    return OK;
+}
+
+ErrorCode calc_ascii_sum_for_file(char *dir_path, File_t *file) {
+    char full_name[2 * MAX_NAME_LEN];
+    sprintf(full_name, "%s/%s", dir_path, file->filename);
+    FILE *pfile = open_file(full_name, "r");
+    file->ascii_sum = 0;
+    char c;
+    while ((c = fgetc(pfile)) != EOF) {
+        file->ascii_sum += c;
     }
     fclose(pfile);
     return OK;

@@ -5,9 +5,9 @@ EXTRAFLAGS=-fsanitize=leak -fsanitize=address -fsanitize=undefined -fsanitize=un
 
 all: check rebuild
 
-build: clean find_duplicates cryptography 
+build: clean find_duplicates cryptography ascii_sort
 
-rebuild: clean_all find_duplicates cryptography clean
+rebuild: clean_all find_duplicates cryptography ascii_sort clean
 
 find_duplicates: clean find_duplicates.c data.c errors.c
 	$(CC) $(CFLAGS) find_duplicates.c data.c errors.c -o  $(BUILD_PATH)find_duplicates 
@@ -15,6 +15,10 @@ find_duplicates: clean find_duplicates.c data.c errors.c
 cryptography: clean cryptography.c data.c errors.c
 	$(CC) $(CFLAGS) cryptography.c data.c errors.c -o  $(BUILD_PATH)cryptography 
 	$(CC) $(CFLAGS) $(EXTRAFLAGS)  cryptography.c data.c errors.c -o  $(BUILD_PATH)cryptography_extra 
+
+ascii_sort: clean ascii_sort.c data.c errors.c
+	$(CC) $(CFLAGS) ascii_sort.c data.c errors.c -o  $(BUILD_PATH)ascii_sort 
+	$(CC) $(CFLAGS) $(EXTRAFLAGS)  ascii_sort.c data.c errors.c -o  $(BUILD_PATH)ascii_sort_extra 
 
 clean_all:
 	rm -rf *.o *.a *.so $(BUILD_PATH)*
