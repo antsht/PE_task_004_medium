@@ -16,9 +16,9 @@ def test_ascii_sort():
     dir = "tests/ascii_sort/"
     result = run([B_PATH_FILE], input=f"{dir}", encoding='utf-8', stdout=PIPE)
     assert result.returncode == 0
-    assert result.stdout == ""
-    dir_data = run([f"ls {dir}"], stdout=PIPE)
-    assert dir_data.stdout == "1_file2.txt 2_file4.txt 3_file3.txt 4_file1.txt\n"
+    assert result.stdout == ""    
+    dir_data = run(['ls', f"{dir}"], encoding='utf-8', stdout=PIPE)
+    assert dir_data.stdout == "1_file2.txt\n2_file4.txt\n3_file3.txt\n4_file1.txt\n"
 
 if __name__ == "__main__":
     pytest.main()
