@@ -55,7 +55,7 @@ int compare_files_by_ascii_sum(const void *a, const void *b) {
 ErrorCode rename_files_in_dir(char *dir_path, Files *files) {
     for (int i = 0; i < files->files_count; i++) {
         char new_name[2 * MAX_NAME_LEN];
-        sprintf(new_name, "%s/%d_%s", dir_path, i+1, files->files[i].filename);
+        sprintf(new_name, "%s/%d_%s", dir_path, i + 1, files->files[i].filename);
         char old_name[2 * MAX_NAME_LEN];
         sprintf(old_name, "%s/%s", dir_path, files->files[i].filename);
         rename(old_name, new_name);
