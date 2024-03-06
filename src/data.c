@@ -62,16 +62,15 @@ ErrorCode encrypt_file(const char *file_path) {
     int shift = 0;
     while ((c = fgetc(pfile)) != EOF) {
         if (isalpha(c) && c != ' ') {
-            printf("char %c key %c\n", c, *key_current_position);
             if (islower(*key_current_position))
-                shift = *key_current_position - 'a' + 1;
+                shift = *key_current_position - 'a';
             else if (isupper(*key_current_position))
-                shift = *key_current_position - 'A' + 1;
+                shift = *key_current_position - 'A';
             if (*(++key_current_position) == '\0') key_current_position = key;
             if (isupper(c)) {
-                c = (c - 'A' + shift - 1) % 26 + 'A';
+                c = (c - 'A' + shift) % 26 + 'A';
             } else {
-                c = (c - 'a' + shift - 1) % 26 + 'a';
+                c = (c - 'a' + shift) % 26 + 'a';
             }
             fseek(pfile, -1, SEEK_CUR);
             fputc(c, pfile);
